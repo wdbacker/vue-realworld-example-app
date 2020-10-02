@@ -9,6 +9,13 @@ import ApiService from "./common/api.service";
 import DateFilter from "./common/date.filter";
 import ErrorFilter from "./common/error.filter";
 
+// import QEWD from the qewd-client
+import { QEWD } from 'qewd-client'
+
+// add QEWD as a global property
+// now you can use QEWD in all your app components as `this.$qewd.reply(...)`
+Vue.prototype.$qewd = QEWD
+
 Vue.config.productionTip = false;
 Vue.filter("date", DateFilter);
 Vue.filter("error", ErrorFilter);
