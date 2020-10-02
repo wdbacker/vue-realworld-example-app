@@ -106,10 +106,9 @@ export const QEWDService = {
 export const TagsService = {
   get() {
     //return ApiService.get("tags");
-    let messageObj = {
+    return QEWDService.reply({
       type: "getTags"
-    }
-    return QEWDService.reply(messageObj)
+    })
   }
 };
 
@@ -120,38 +119,29 @@ export const ArticlesService = {
       params: params
     });
     */
-    let messageObj = {
+    return QEWDService.reply({
       type: (type === "feed") ? "getArticlesFeed" : "getArticlesList",
       query: params,
       JWT: JwtService.getToken()
-    }
-    //let JWT = JwtService.getToken()
-    //if (JWT) messageObj.JWT = JWT
-    return QEWDService.reply(messageObj)
+    })
   },
   get(slug) {
     //return ApiService.get("articles", slug);
-    let messageObj = {
+    return QEWDService.reply({
       type: "getArticleBySlug",
       slug,
       JWT: JwtService.getToken()
-    }
-    //let JWT = JwtService.getToken()
-    //if (JWT) messageObj.JWT = JWT
-    return QEWDService.reply(messageObj)
+    })
   },
   create(params) {
     //return ApiService.post("articles", { article: params });
-    let messageObj = {
+    return QEWDService.reply({
       type: "createArticle",
       body: {
         article: params
       },
       JWT: JwtService.getToken()
-    }
-    //let JWT = JwtService.getToken()
-    //if (JWT) messageObj.JWT = JWT
-    return QEWDService.reply(messageObj);
+    });
   },
   update(slug, params) {
     return ApiService.update("articles", slug, { article: params });
