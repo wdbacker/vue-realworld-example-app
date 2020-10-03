@@ -2,6 +2,7 @@ import Vue from "vue";
 import axios from "axios";
 import VueAxios from "vue-axios";
 import JwtService from "@/common/jwt.service";
+// add a second QEWD_URL parameter for the WebSocket endpoint
 import { API_URL, QEWD_URL } from "@/common/config";
 // import the socket.io client into our App component
 import io from 'socket.io-client'
@@ -51,9 +52,11 @@ const ApiService = {
 
 export default ApiService;
 
+// add a similar service wrapper object here for WebSocket communication
 export const QEWDService = {
   _vcc: null,
 
+  // initialise + start the WebSocket communication using qewd-client
   init(vcc) {
     // keep the Vue (App) component context
     this._vcc = vcc
@@ -75,14 +78,14 @@ export const QEWDService = {
       vcc.qewdNotReachable = true
     });
     /*
-      start QEWD.js with these required params:
+      start QEWD-Up/QEWD.js client with these required params:
       - application: QEWD's application name
       - io: the imported websocket client module
-      - url: the url of your QEWD.js server
+      - url: the url of your QEWD-Up/QEWD.js server
 
       *** important: by default, a Vue.js app will run it's development server on localhost:8080 
-      (this is the same port as QEWD.js's default port 8080)
-      you'll *need* to change the port to e.g. 8090 in QEWD.js's config
+      (this is the same port as QEWD's default port 8080)
+      you'll *need* to change the port to e.g. 8090 in QEWD's config
       to make it work with a Vue.js app!
     */
     vcc.$qewd.start({
@@ -92,6 +95,7 @@ export const QEWDService = {
     })
   },
 
+  // wrap the qewd-client reply() method of qewd-client to return a compatible response format with axios
   reply(messageObj) {
     let vcc = this._vcc
     return new Promise((resolve, reject) => {
@@ -102,6 +106,15 @@ export const QEWDService = {
     })
   }
 }
+
+/*
+  we changed some of the vuex services to use WebSockets calls
+  and commented out the original REST calls
+  we let other services still REST calls to the same QEWD-Up/QEWD.js back-end
+  because we can use both REST and WebSocket endpoints simultaneously!
+  at the back-end, we can even (re)use the same code for both
+  REST & WebSocket handlers using a small wrapper function
+*/
 
 export const TagsService = {
   get() {
@@ -129,7 +142,9 @@ export const ArticlesService = {
     //return ApiService.get("articles", slug);
     return QEWDService.reply({
       type: "getArticleBySlug",
-      slug,
+      params: {
+        slug
+      },
       JWT: JwtService.getToken()
     })
   },
@@ -159,6 +174,13 @@ export const CommentsService = {
       );
     }
     return ApiService.get("articles", `${slug}/comments`);
+    /*
+    return QEWDService.reply({
+      type: "getComments",
+      slug,
+      JWT: JwtService.getToken()
+    })
+    */
   },
 
   post(slug, payload) {

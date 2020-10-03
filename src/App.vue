@@ -26,7 +26,8 @@ export default {
       qewdNotReachable: false
     }
   },
-  created () { 
+  created () {
+    // init the WebSocket connection to the QEWD-Up/QEWD.js back-end within the App context
     QEWDService.init(this)
   }
 };
